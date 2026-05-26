@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using WebApiDemo.Data;
 using WebAPIDemo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,14 @@ builder.Services.AddOpenApi();
 
 // Link Dependency Interface aan implementerende klasse
 builder.Services.AddScoped<ILaptopRepository, InMemoryRepository>();
+
+// Registreer de Database Connectie
+var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+
+// Registreer de DbContext met de PostgreSQL provider (Npgsql)
+builder.Services.AddDbContext<WebAPIDemoContext>(options =>
+    options.UseNpgsql(connectionString));
+
 
 var app = builder.Build();
 

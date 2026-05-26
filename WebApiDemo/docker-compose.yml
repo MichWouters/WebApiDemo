@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Dienst 1: De PostgreSQL Database
+  postgres-db:
+    image: postgres:16-alpine # Een lichtgewicht, stabiele versie van Postgres
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: JeWachtwoordHier # Dit moet matchen met je appsettings.json
+      POSTGRES_DB: WebAPIDemoDb
+    ports:
+      - "5432:5432" # Sluis poort 5432 van de container door naar jouw localhost:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Zorgt dat je data bewaard blijft als de container stopt
+
+  # Dienst 2: pgAdmin (De online beheeromgeving)
+  pgadmin-tool:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: student@opleiding.be # Je inlog-e-mail voor pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: Welkom01!      # Je inlogwachtwoord voor pgAdmin
+    ports:
+      - "8080:80" # Je opent pgAdmin via http://localhost:8080
+    depends_on:
+      - postgres-db
+
+volumes:
+  postgres_data:
