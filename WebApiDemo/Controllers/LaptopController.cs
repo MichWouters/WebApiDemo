@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApiDemo.Repositories;
 using WebAPIDemo.Models;
-using WebAPIDemo.Repositories;
 // Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
 
 namespace WebAPIDemo.Controllers;
@@ -21,18 +21,18 @@ public class LaptopsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Laptop>> GetAlleLaptops()
+    public async Task<ActionResult<List<Laptop>>> GetAlleLaptopsAsync()
     {
         _logger.LogInformation("GET request ontvangen voor alle laptops.");
-        return Ok(_laptopRepository.GetAll());
+        return Ok(await _laptopRepository.GetAllAsync());
     }
 
     [HttpGet("{id}")]
-    public ActionResult<Laptop> GetLaptopById(int id)
+    public async Task<ActionResult<Laptop>> GetLaptopByIdAsync(int id)
     {
         _logger.LogInformation($"GET request voor laptop met ID: {id}");
 
-        var laptop = _laptopRepository.GetById(id);
+        Laptop? laptop = await _laptopRepository.GetByIdAsync(id);
 
         if (laptop == null)
         {
@@ -44,22 +44,22 @@ public class LaptopsController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<Laptop> CreateLaptop(Laptop nieuweLaptop)
+    public async Task<ActionResult<Laptop>> CreateLaptopAsync(Laptop nieuweLaptop)
     {
         _logger.LogInformation($"Aanmaken van nieuwe laptop: {nieuweLaptop.Merk}");
 
-        var aangemaakteLaptop = _laptopRepository.Create(nieuweLaptop);
+        Laptop aangemaakteLaptop = await _laptopRepository.CreateAsync(nieuweLaptop);
 
         _logger.LogInformation($"Laptop succesvol aangemaakt met ID: {aangemaakteLaptop.Id}");
-        return CreatedAtAction(nameof(GetLaptopById), new { id = aangemaakteLaptop.Id }, aangemaakteLaptop);
+        return CreatedAtAction(nameof(GetLaptopByIdAsync), new { id = aangemaakteLaptop.Id }, aangemaakteLaptop);
     }
 
     [HttpPut("{id}")]
-    public ActionResult UpdateLaptop(int id, Laptop bijgewerkteLaptop)
+    public async Task<ActionResult> UpdateLaptopAsync(int id, Laptop bijgewerkteLaptop)
     {
         _logger.LogInformation($"Update request voor laptop met ID: {id}");
 
-        var bestaandeLaptop = _laptopRepository.GetById(id);
+        Laptop? bestaandeLaptop = await _laptopRepository.GetByIdAsync(id);
 
         if (bestaandeLaptop == null)
         {
@@ -67,18 +67,18 @@ public class LaptopsController : ControllerBase
             return NotFound($"Kan geen laptop bijwerken met Id {id}, omdat deze niet bestaat.");
         }
 
-        _laptopRepository.Update(id, bijgewerkteLaptop);
+        await _laptopRepository.UpdateAsync(id, bijgewerkteLaptop);
 
         _logger.LogInformation($"Laptop met ID {id} is succesvol bijgewerkt.");
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public ActionResult DeleteLaptop(int id)
+    public async Task<ActionResult> DeleteLaptopAsync(int id)
     {
         _logger.LogInformation($"Delete request voor laptop met ID: {id}");
 
-        var laptop = _laptopRepository.GetById(id);
+        Laptop? laptop = await _laptopRepository.GetByIdAsync(id);
 
         if (laptop == null)
         {
@@ -86,7 +86,7 @@ public class LaptopsController : ControllerBase
             return NotFound($"Kan laptop met Id {id} niet verwijderen, omdat deze niet is gevonden.");
         }
 
-        _laptopRepository.Delete(id);
+        await _laptopRepository.DeleteAsync(id);
 
         _logger.LogInformation($"Laptop met ID {id} is succesvol verwijderd.");
         return NoContent();
