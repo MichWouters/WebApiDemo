@@ -1,0 +1,15 @@
+﻿namespace WebAPIDemo.Models
+{
+    public class Klant
+    {
+        public int Id { get; set; }
+
+        public string Naam { get; set; } = default!;
+
+        public string Voornaam { get; set; } = default!;
+
+        public DateTime AangemaaktDatum { get; set; }
+
+        public List<Bestelling>? Bestellingen { get; set; } = default!;
+    }
+}
