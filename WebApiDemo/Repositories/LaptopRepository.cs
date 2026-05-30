@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore; // Nodig voor de asynchrone extensiemethodes
 using WebApiDemo.Data;
 using WebAPIDemo.Models;
-using WebAPIDemo.Repositories;
 
 namespace WebApiDemo.Repositories
 {
