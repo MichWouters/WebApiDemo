@@ -36,6 +36,13 @@ namespace WebApiDemo.Data
             modelBuilder.Entity<Bestelling>(entity =>
             {
                 entity.ToTable("Bestelling");
+
+                entity.HasOne(p => p.Klant)
+                .WithMany(x => x.Bestellingen)
+                .HasForeignKey(y => y.KlantId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
             });
 
             modelBuilder.Entity<Klant>(entity =>
@@ -46,6 +53,18 @@ namespace WebApiDemo.Data
             modelBuilder.Entity<OrderLijn>(entity =>
             {
                 entity.ToTable("OrderLijn");
+
+                entity.HasOne(p => p.Bestelling)
+                .WithMany(x => x.Orderlijnen)
+                .HasForeignKey(y => y.BestellingId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
+                entity.HasOne(p => p.Bestelling)
+                .WithMany(x => x.Orderlijnen)
+                .HasForeignKey(y => y.BestellingId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
             });
 
             modelBuilder.Entity<Product>(entity =>
