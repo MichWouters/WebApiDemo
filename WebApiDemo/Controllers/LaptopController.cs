@@ -32,7 +32,7 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"GET request voor laptop met ID: {id}");
 
-        var laptop = _laptopRepository.GetById(id);
+        Laptop? laptop = _laptopRepository.GetById(id);
 
         if (laptop == null)
         {
@@ -43,12 +43,27 @@ public class LaptopsController : ControllerBase
         return Ok(laptop);
     }
 
+    [HttpGet("merk/{merk}")]
+    public ActionResult<List<Laptop>> GetLaptopsByMerk(string merk)
+    {
+        _logger.LogInformation($"GET request ontvangen voor laptops met merk: {merk}");
+        List<Laptop>? laptops = _laptopRepository.GetLaptopsByMerk(merk);
+
+        if (laptops == null || laptops.Count == 0)
+        {
+            _logger.LogWarning($"Geen laptops gevonden met merk: {merk}");
+            return NotFound($"Helaas, we konden geen laptops vinden met merk {merk}.");
+        }
+
+        return Ok(laptops);
+    }
+
     [HttpPost]
     public ActionResult<Laptop> CreateLaptop(Laptop nieuweLaptop)
     {
         _logger.LogInformation($"Aanmaken van nieuwe laptop: {nieuweLaptop.Merk}");
 
-        var aangemaakteLaptop = _laptopRepository.Create(nieuweLaptop);
+        Laptop aangemaakteLaptop = _laptopRepository.Create(nieuweLaptop);
 
         _logger.LogInformation($"Laptop succesvol aangemaakt met ID: {aangemaakteLaptop.Id}");
         return CreatedAtAction(nameof(GetLaptopById), new { id = aangemaakteLaptop.Id }, aangemaakteLaptop);
@@ -59,7 +74,7 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"Update request voor laptop met ID: {id}");
 
-        var bestaandeLaptop = _laptopRepository.GetById(id);
+        Laptop? bestaandeLaptop = _laptopRepository.GetById(id);
 
         if (bestaandeLaptop == null)
         {
@@ -78,7 +93,7 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"Delete request voor laptop met ID: {id}");
 
-        var laptop = _laptopRepository.GetById(id);
+        Laptop? laptop = _laptopRepository.GetById(id);
 
         if (laptop == null)
         {

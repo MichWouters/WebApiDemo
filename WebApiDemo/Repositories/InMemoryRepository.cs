@@ -23,6 +23,14 @@ public class InMemoryRepository : ILaptopRepository
         return laptops.FirstOrDefault(x => x.Id == id);
     }
 
+    public List<Laptop>? GetLaptopsByMerk(string merk)
+    {
+        //Zoek laptops waar een bepaalde conditie true is
+        return laptops
+            .Where(x => x.Merk.ToLower() == merk.ToLower())
+            .ToList();
+    }
+
     public Laptop Create(Laptop nieuweLaptop)
     {
         // Omdat we geen database hebben die automatisch ID's genereert, zoeken we zelf de hoogste ID en tellen we er 1 bij op.
