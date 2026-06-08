@@ -25,9 +25,7 @@ namespace WebApiDemo.Repositories
         // R - Read (All): Haal alle laptops op
         public async Task<List<Laptop>> GetAllAsync()
         {
-            return await _context.Laptops
-                .OrderBy(x => x.Merk)
-                .ToListAsync();
+            return await _context.Laptops.ToListAsync();
         }
 
         // R - Read (Single): Zoek een specifieke laptop op basis van ID

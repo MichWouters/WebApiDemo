@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApiDemo.Data;
@@ -11,9 +12,11 @@ using WebApiDemo.Data;
 namespace WebApiDemo.Migrations
 {
     [DbContext(typeof(WebAPIDemoContext))]
-    partial class WebAPIDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20260608163618_seed_data")]
+    partial class seed_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
