@@ -1,66 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore; // Nodig voor de asynchrone extensiemethodes
+﻿using Microsoft.EntityFrameworkCore;
 using WebApiDemo.Data;
 using WebAPIDemo.Models;
 
-namespace WebApiDemo.Repositories
+namespace WebAPIDemo.Repositories
 {
-    public class LaptopRepository : ILaptopRepository
+    public class LaptopRepository : GenericRepository<Laptop>, ILaptopRepository
     {
-        private readonly WebAPIDemoContext _context;
+        // base(context) stuurt de binnengekomen context door naar de GenericRepository
+        public LaptopRepository(WebAPIDemoContext context) : base(context) { }
 
-        public LaptopRepository(WebAPIDemoContext context)
+        // We implementeren enkel de specifieke methode
+        public async Task<IEnumerable<Laptop>> GetLaptopsByMerkAsync(string merk)
         {
-            _context = context;
-        }
-
-        // C - Create: Voeg een nieuwe laptop toe
-        public async Task<Laptop> CreateAsync(Laptop laptop)
-        {
-            _context.Laptops.Add(laptop);
-            await _context.SaveChangesAsync();
-
-            return laptop;
-        }
-
-        // R - Read (All): Haal alle laptops op
-        public async Task<List<Laptop>> GetAllAsync()
-        {
-            return await _context.Laptops.ToListAsync();
-        }
-
-        // R - Read (Single): Zoek een specifieke laptop op basis van ID
-        public async Task<Laptop?> GetByIdAsync(int id)
-        {
-            return await _context.Laptops.FindAsync(id);
-        }
-
-        // U - Update: Pas de gegevens aan
-        public async Task UpdateAsync(int id, Laptop updatedLaptop)
-        {
-            Laptop? existingLaptop = await _context.Laptops.FindAsync(id);
-
-            if (existingLaptop != null)
-            {
-                existingLaptop.Merk = updatedLaptop.Merk;
-                existingLaptop.Processor = updatedLaptop.Processor;
-                existingLaptop.RamInGB = updatedLaptop.RamInGB;
-                existingLaptop.Prijs = updatedLaptop.Prijs;
-                existingLaptop.GPU = updatedLaptop.GPU;
-
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        // D - Delete: Verwijder een laptop
-        public async Task DeleteAsync(int id)
-        {
-            Laptop? laptopToDelete = await _context.Laptops.FindAsync(id);
-
-            if (laptopToDelete != null)
-            {
-                _context.Laptops.Remove(laptopToDelete);
-                await _context.SaveChangesAsync();
-            }
+            // Dankzij 'protected' in GenericRepository kunnen we hier bij _context
+            return await _context.Laptops
+                .Where(x => x.Merk.ToLower() == merk.ToLower())
+                .ToListAsync();
         }
     }
 }

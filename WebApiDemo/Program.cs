@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using WebApiDemo.Data;
-using WebApiDemo.Repositories;
+using WebAPIDemo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Link Dependency Interface aan implementerende klasse
-builder.Services.AddScoped<ILaptopRepository, LaptopRepository>();
+// Registreer UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registreer de Database Connectie
 var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
