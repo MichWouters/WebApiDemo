@@ -12,7 +12,7 @@ using WebApiDemo.Data;
 namespace WebApiDemo.Migrations
 {
     [DbContext(typeof(WebAPIDemoContext))]
-    [Migration("20260608163618_seed_data")]
+    [Migration("20260608174654_seed_data")]
     partial class seed_data
     {
         /// <inheritdoc />
@@ -318,7 +318,7 @@ namespace WebApiDemo.Migrations
                     b.HasOne("WebAPIDemo.Models.Product", "Product")
                         .WithMany("Orderlijnen")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Bestelling");

@@ -315,7 +315,7 @@ namespace WebApiDemo.Migrations
                     b.HasOne("WebAPIDemo.Models.Product", "Product")
                         .WithMany("Orderlijnen")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Bestelling");

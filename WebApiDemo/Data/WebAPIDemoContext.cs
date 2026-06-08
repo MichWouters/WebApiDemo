@@ -26,6 +26,59 @@ namespace WebApiDemo.Data
             SeedData(modelBuilder);
         }
 
+        private void GenerateTables(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Laptop>(entity =>
+            {
+                entity.ToTable("Laptops");
+                entity.Property(p => p.Merk).IsRequired().HasMaxLength(50);
+                entity.Property(p => p.Processor).IsRequired().HasMaxLength(100);
+                entity.Property(p => p.RamInGB).IsRequired();
+                entity.Property(p => p.Prijs).IsRequired().HasPrecision(18, 2);
+                entity.Property(p => p.GPU).IsRequired().HasMaxLength(100);
+
+            });
+
+            modelBuilder.Entity<Bestelling>(entity =>
+            {
+                entity.ToTable("Bestelling");
+
+                entity.HasOne(p => p.Klant)
+                .WithMany(x => x.Bestellingen)
+                .HasForeignKey(y => y.KlantId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
+            });
+
+            modelBuilder.Entity<Klant>(entity =>
+            {
+                entity.ToTable("Klant");
+            });
+
+            modelBuilder.Entity<OrderLijn>(entity =>
+            {
+                entity.ToTable("OrderLijn");
+
+                entity.HasOne(p => p.Bestelling)
+                .WithMany(x => x.Orderlijnen)
+                .HasForeignKey(y => y.BestellingId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
+                entity.HasOne(p => p.Product)
+                .WithMany(x => x.Orderlijnen)
+                .HasForeignKey(y => y.ProductId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.ToTable("Product");
+            });
+        }
+
         private void SeedData(ModelBuilder modelBuilder)
         {
             // 1. Klanten Seeden
@@ -68,57 +121,6 @@ namespace WebApiDemo.Data
             );
         }
 
-        private void GenerateTables(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Laptop>(entity =>
-            {
-                entity.ToTable("Laptops");
-                entity.Property(p => p.Merk).IsRequired().HasMaxLength(50);
-                entity.Property(p => p.Processor).IsRequired().HasMaxLength(100);
-                entity.Property(p => p.RamInGB).IsRequired();
-                entity.Property(p => p.Prijs).IsRequired().HasPrecision(18, 2);
-                entity.Property(p => p.GPU).IsRequired().HasMaxLength(100);
-
-            });
-
-            modelBuilder.Entity<Bestelling>(entity =>
-            {
-                entity.ToTable("Bestelling");
-
-                entity.HasOne(p => p.Klant)
-                .WithMany(x => x.Bestellingen)
-                .HasForeignKey(y => y.KlantId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired();
-
-            });
-
-            modelBuilder.Entity<Klant>(entity =>
-            {
-                entity.ToTable("Klant");
-            });
-
-            modelBuilder.Entity<OrderLijn>(entity =>
-            {
-                entity.ToTable("OrderLijn");
-
-                entity.HasOne(p => p.Bestelling)
-                .WithMany(x => x.Orderlijnen)
-                .HasForeignKey(y => y.BestellingId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired();
-
-                entity.HasOne(p => p.Bestelling)
-                .WithMany(x => x.Orderlijnen)
-                .HasForeignKey(y => y.BestellingId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired();
-            });
-
-            modelBuilder.Entity<Product>(entity =>
-            {
-                entity.ToTable("Product");
-            });
-        }
+        
     }
 }
