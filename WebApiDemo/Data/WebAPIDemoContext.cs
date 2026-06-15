@@ -14,9 +14,9 @@ namespace WebApiDemo.Data
 
         public DbSet<Klant> Klanten { get; set; }
 
-        public DbSet<OrderLijn>OrderLijnen { get; set; }
+        public DbSet<OrderLijn> OrderLijnen { get; set; }
 
-        public DbSet<Product> Producten{ get; set; }
+        public DbSet<Product> Producten { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,6 @@ namespace WebApiDemo.Data
                 entity.Property(p => p.RamInGB).IsRequired();
                 entity.Property(p => p.Prijs).IsRequired().HasPrecision(18, 2);
                 entity.Property(p => p.GPU).IsRequired().HasMaxLength(100);
-
             });
 
             modelBuilder.Entity<Bestelling>(entity =>
@@ -48,7 +47,6 @@ namespace WebApiDemo.Data
                 .HasForeignKey(y => y.KlantId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
-
             });
 
             modelBuilder.Entity<Klant>(entity =>
@@ -61,7 +59,7 @@ namespace WebApiDemo.Data
                 entity.ToTable("OrderLijn");
 
                 entity.HasOne(p => p.Bestelling)
-                .WithMany(x => x.Orderlijnen)
+                .WithMany(x => x.OrderLijnen)
                 .HasForeignKey(y => y.BestellingId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired();
@@ -120,7 +118,5 @@ namespace WebApiDemo.Data
                 new OrderLijn { Id = 10, Aantal = 10, BestellingId = 5, ProductId = 3 }
             );
         }
-
-        
     }
 }

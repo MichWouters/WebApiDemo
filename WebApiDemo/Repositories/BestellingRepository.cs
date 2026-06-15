@@ -2,58 +2,37 @@
 using WebApiDemo.Data;
 using WebAPIDemo.Models;
 
-namespace WebApiDemo.Repositories
+namespace WebAPIDemo.Repositories
 {
-    public class BestellingRepository : IBestellingRepository
+    public class BestellingRepository : GenericRepository<Bestelling>, IBestellingRepository
     {
-        private readonly WebAPIDemoContext _context;
-
-        public BestellingRepository(WebAPIDemoContext context)
+        public BestellingRepository(WebAPIDemoContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<Bestelling> CreateAsync(Bestelling bestelling)
+        public async Task<Bestelling?> GetBestellingMetKlantAsync(int id)
         {
-            _context.Bestellingen.Add(bestelling);
-            await _context.SaveChangesAsync();
+            // 1. Haal de gekoppelde klant op (Bestelling -> Klant)
+            Bestelling? bestelling = await _context.Set<Bestelling>()
+                .Include(b => b.Klant)
+                .FirstOrDefaultAsync(b => b.Id == id);
 
             return bestelling;
         }
 
-        public async Task<List<Bestelling>> GetAllAsync()
+        public async Task<Bestelling?> GetBestellingMetDetailsAsync(int id)
         {
-            return await _context.Bestellingen.ToListAsync();
-        }
+            return await _context.Set<Bestelling>()
+                // 1. Haal de gekoppelde klant op (Bestelling -> Klant)
+                .Include(b => b.Klant)
 
-        public async Task<Bestelling?> GetByIdAsync(int id)
-        {
-            return await _context.Bestellingen.FindAsync(id);
-        }
+                // 2. Haal de orderlijnen van deze bestelling op (Bestelling -> OrderLijnen)
+                .Include(b => b.OrderLijnen)
+                    // 3. Ga een niveau dieper: haal per orderlijn het product op (OrderLijn -> Product)
+                    .ThenInclude(ol => ol.Product)
 
-        // U - Update: Pas de gegevens aan
-        public async Task UpdateAsync(int id, Bestelling updatedBestelling)
-        {
-            Bestelling? existingBestelling = await _context.Bestellingen.FindAsync(id);
-
-            if (existingBestelling != null)
-            {
-                existingBestelling = updatedBestelling;
-
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        // D - Delete: Verwijder een laptop
-        public async Task DeleteAsync(int id)
-        {
-            Bestelling? bestellingToDelete = await _context.Bestellingen.FindAsync(id);
-
-            if (bestellingToDelete != null)
-            {
-                _context.Bestellingen.Remove(bestellingToDelete);
-                await _context.SaveChangesAsync();
-            }
+                // Voer de query uit
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
     }
 }

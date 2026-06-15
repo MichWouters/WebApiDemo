@@ -1,13 +1,11 @@
 ﻿using WebAPIDemo.Models;
 
-namespace WebApiDemo.Repositories
+namespace WebAPIDemo.Repositories
 {
-    public interface IBestellingRepository
+    public interface IBestellingRepository : IGenericRepository<Bestelling>
     {
-        Task<Bestelling> CreateAsync(Bestelling bestelling);
-        Task DeleteAsync(int id);
-        Task<List<Bestelling>> GetAllAsync();
-        Task<Bestelling?> GetByIdAsync(int id);
-        Task UpdateAsync(int id, Bestelling updatedBestelling);
+        Task<Bestelling?> GetBestellingMetKlantAsync(int id);
+
+        Task<Bestelling?> GetBestellingMetDetailsAsync(int id);
     }
 }

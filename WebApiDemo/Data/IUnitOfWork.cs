@@ -1,5 +1,4 @@
-﻿using WebApiDemo.Repositories;
-using WebAPIDemo.Models;
+﻿using WebAPIDemo.Models;
 
 namespace WebAPIDemo.Repositories
 {
@@ -8,10 +7,12 @@ namespace WebAPIDemo.Repositories
         // Specifieke repository omdat deze extra methoden heeft
         ILaptopRepository LaptopRepository { get; }
 
+        IBestellingRepository BestellingRepository { get; }
+
         // Generieke repositories voor entiteiten die enkel basis-CRUD nodig hebben
         IGenericRepository<Product> ProductRepository { get; }
+
         IGenericRepository<Klant> KlantRepository { get; }
-        IGenericRepository<Bestelling> BestellingRepository { get; }
         IGenericRepository<OrderLijn> OrderLijnRepository { get; }
 
         // De centrale Save methode (asynchroon)

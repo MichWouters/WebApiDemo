@@ -8,6 +8,6 @@
 
         public Klant? Klant { get; set; } = default!;
 
-        public List<OrderLijn> Orderlijnen { get; set; } = default!;
+        public List<OrderLijn> OrderLijnen { get; set; } = default!;
     }
 }

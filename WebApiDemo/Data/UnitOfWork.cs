@@ -9,9 +9,11 @@ namespace WebAPIDemo.Repositories
 
         // Private fields voor de repositories (voor lazy loading)
         private ILaptopRepository? _laptopRepository;
+
+        private IBestellingRepository? _bestellingRepository;
+
         private IGenericRepository<Product>? _productRepository;
         private IGenericRepository<Klant>? _klantRepository;
-        private IGenericRepository<Bestelling>? _bestellingRepository;
         private IGenericRepository<OrderLijn>? _orderLijnRepository;
 
         public UnitOfWork(WebAPIDemoContext context)
@@ -31,8 +33,8 @@ namespace WebAPIDemo.Repositories
         public IGenericRepository<Klant> KlantRepository =>
             _klantRepository ??= new GenericRepository<Klant>(_context);
 
-        public IGenericRepository<Bestelling> BestellingRepository =>
-            _bestellingRepository ??= new GenericRepository<Bestelling>(_context);
+        public IBestellingRepository BestellingRepository =>
+            _bestellingRepository ??= new BestellingRepository(_context);
 
         public IGenericRepository<OrderLijn> OrderLijnRepository =>
             _orderLijnRepository ??= new GenericRepository<OrderLijn>(_context);

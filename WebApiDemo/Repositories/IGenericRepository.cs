@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace WebAPIDemo.Repositories
+﻿namespace WebAPIDemo.Repositories
 {
     // TEntity is een placeholder voor het uiteindelijke model (bv. Laptop of Product)
     public interface IGenericRepository<TEntity> where TEntity : class

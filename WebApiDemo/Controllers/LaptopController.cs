@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApiDemo.Repositories;
 using WebAPIDemo.Models;
 using WebAPIDemo.Repositories;
+
 // Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
 
 namespace WebAPIDemo.Controllers;
@@ -12,6 +12,7 @@ public class LaptopsController : ControllerBase
 {
     // Onze "ingrediënten" (Dependencies)
     private readonly IUnitOfWork _uow;
+
     private readonly ILogger<LaptopsController> _logger;
 
     // Vraag om en injecteer Dependencies
