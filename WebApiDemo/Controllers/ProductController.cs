@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApiDemo.Repositories;
 using WebAPIDemo.Models;
+using WebAPIDemo.Repositories;
 // Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
 
 namespace WebAPIDemo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LaptopsController : ControllerBase
+public class ProductController : ControllerBase
 {
     // Onze "ingrediënten" (Dependencies)
-    private readonly ILaptopRepository _laptopRepository;
-    private readonly ILogger<LaptopsController> _logger;
+    private readonly IUnitOfWork _uow;
+    private readonly ILogger<ProductController> _logger;
 
     // Vraag om en injecteer Dependencies
-    public LaptopsController(ILaptopRepository laptopRepository, ILogger<LaptopsController> logger)
+    public ProductController(IUnitOfWork uow, ILogger<ProductController> logger)
     {
-        _laptopRepository = laptopRepository;
+        _uow = uow;
         _logger = logger;
     }
 
@@ -24,7 +24,7 @@ public class LaptopsController : ControllerBase
     public async Task<ActionResult<List<Laptop>>> GetAlleLaptopsAsync()
     {
         _logger.LogInformation("GET request ontvangen voor alle laptops.");
-        return Ok(await _laptopRepository.GetAllAsync());
+        return Ok(await _uow.LaptopRepository.GetAllAsync());
     }
 
     [HttpGet("{id}")]
@@ -32,7 +32,7 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"GET request voor laptop met ID: {id}");
 
-        Laptop? laptop = await _laptopRepository.GetByIdAsync(id);
+        Laptop? laptop = await _uow.LaptopRepository.GetByIdAsync(id);
 
         if (laptop == null)
         {
@@ -48,10 +48,13 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"Aanmaken van nieuwe laptop: {nieuweLaptop.Merk}");
 
-        Laptop aangemaakteLaptop = await _laptopRepository.CreateAsync(nieuweLaptop);
+        // 1. Voeg de actie toe aan de Change Tracker via de repository
+        _uow.LaptopRepository.Add(nieuweLaptop);
 
-        _logger.LogInformation($"Laptop succesvol aangemaakt met ID: {aangemaakteLaptop.Id}");
-        return CreatedAtAction(nameof(GetLaptopByIdAsync), new { id = aangemaakteLaptop.Id }, aangemaakteLaptop);
+        // 2. Schrijf de wijzigingen daadwerkelijk weg via de Unit of Work
+        await _uow.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(CreateLaptopAsync), new { id = nieuweLaptop.Id }, nieuweLaptop);
     }
 
     [HttpPut("{id}")]
@@ -59,7 +62,12 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"Update request voor laptop met ID: {id}");
 
-        Laptop? bestaandeLaptop = await _laptopRepository.GetByIdAsync(id);
+        if (id != bijgewerkteLaptop.Id)
+        {
+            return BadRequest();
+        }
+
+        Laptop? bestaandeLaptop = await _uow.LaptopRepository.GetByIdAsync(id);
 
         if (bestaandeLaptop == null)
         {
@@ -67,7 +75,8 @@ public class LaptopsController : ControllerBase
             return NotFound($"Kan geen laptop bijwerken met Id {id}, omdat deze niet bestaat.");
         }
 
-        await _laptopRepository.UpdateAsync(id, bijgewerkteLaptop);
+        _uow.LaptopRepository.Update(bijgewerkteLaptop);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation($"Laptop met ID {id} is succesvol bijgewerkt.");
         return NoContent();
@@ -78,7 +87,7 @@ public class LaptopsController : ControllerBase
     {
         _logger.LogInformation($"Delete request voor laptop met ID: {id}");
 
-        Laptop? laptop = await _laptopRepository.GetByIdAsync(id);
+        Laptop? laptop = await _uow.LaptopRepository.GetByIdAsync(id);
 
         if (laptop == null)
         {
@@ -86,7 +95,8 @@ public class LaptopsController : ControllerBase
             return NotFound($"Kan laptop met Id {id} niet verwijderen, omdat deze niet is gevonden.");
         }
 
-        await _laptopRepository.DeleteAsync(id);
+        _uow.LaptopRepository.Delete(laptop);
+        await _uow.SaveChangesAsync();
 
         _logger.LogInformation($"Laptop met ID {id} is succesvol verwijderd.");
         return NoContent();

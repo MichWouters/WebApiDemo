@@ -1,13 +1,11 @@
 ﻿using WebAPIDemo.Models;
 
-namespace WebApiDemo.Repositories
+namespace WebAPIDemo.Repositories
 {
-    public interface ILaptopRepository
+    // We erven alle standaard methoden over voor het type Laptop
+    public interface ILaptopRepository : IGenericRepository<Laptop>
     {
-        Task<Laptop> CreateAsync(Laptop laptop);
-        Task DeleteAsync(int id);
-        Task<List<Laptop>> GetAllAsync();
-        Task<Laptop?> GetByIdAsync(int id);
-        Task UpdateAsync(int id, Laptop updatedLaptop);
+        // We voegen enkel de specifieke methoden toe
+        Task<IEnumerable<Laptop>> GetLaptopsByMerkAsync(string merk);
     }
 }
