@@ -13,5 +13,5 @@ public class Laptop
 
     public double Prijs { get; set; }
 
-    public string GPU { get; set; } = "";   
+    public string GPU { get; set; } = "";
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebAPIDemo.Models;
-using WebApiDemo.Repositories;
+using WebAPIDemo.Repositories;
 
 namespace WebAPIDemo.Controllers
 {
@@ -8,19 +8,19 @@ namespace WebAPIDemo.Controllers
     [ApiController]
     public class BestellingController : ControllerBase
     {
-        private readonly IBestellingRepository _bestellingRepo;
+        private readonly IUnitOfWork _uow;
 
         // Dependency Injection
-        public BestellingController(IBestellingRepository bestellingRepo)
+        public BestellingController(IUnitOfWork uow)
         {
-            _bestellingRepo = bestellingRepo;
+            _uow = uow;
         }
 
         // GET: api/bestellingen
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bestelling>>> GetBestellingen()
         {
-            var bestellingen = await _bestellingRepo.GetAllAsync();
+            var bestellingen = await _uow.BestellingRepository.GetAllAsync();
             return Ok(bestellingen);
         }
 
@@ -28,7 +28,7 @@ namespace WebAPIDemo.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Bestelling>> GetBestelling(int id)
         {
-            var bestelling = await _bestellingRepo.GetByIdAsync(id);
+            var bestelling = await _uow.BestellingRepository.GetByIdAsync(id);
 
             if (bestelling == null)
             {
@@ -42,9 +42,10 @@ namespace WebAPIDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Bestelling>> PostBestelling(Bestelling bestelling)
         {
-            var nieuweBestelling = await _bestellingRepo.CreateAsync(bestelling);
+            _uow.BestellingRepository.Add(bestelling);
+            await _uow.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBestelling), new { id = nieuweBestelling.Id }, nieuweBestelling);
+            return CreatedAtAction(nameof(GetBestelling), new { id = bestelling.Id }, bestelling);
         }
 
         // PUT: api/bestellingen/5
@@ -56,7 +57,9 @@ namespace WebAPIDemo.Controllers
                 return BadRequest("De ID in de URL komt niet overeen met het ID in de data.");
             }
 
-            await _bestellingRepo.UpdateAsync(id, bestelling);
+            _uow.BestellingRepository.Update(bestelling);
+            await _uow.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -64,13 +67,15 @@ namespace WebAPIDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBestelling(int id)
         {
-            var bestelling = await _bestellingRepo.GetByIdAsync(id);
+            var bestelling = await _uow.BestellingRepository.GetByIdAsync(id);
             if (bestelling == null)
             {
                 return NotFound();
             }
 
-            await _bestellingRepo.DeleteAsync(id);
+            _uow.BestellingRepository.Delete(bestelling);
+            await _uow.SaveChangesAsync();
+
             return NoContent();
         }
     }
