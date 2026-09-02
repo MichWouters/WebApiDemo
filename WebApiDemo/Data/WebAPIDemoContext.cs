@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebAPIDemo.Models;
-
-namespace WebApiDemo.Data
+﻿namespace WebAPIDemo.Data
 {
     public class WebAPIDemoContext : DbContext
     {

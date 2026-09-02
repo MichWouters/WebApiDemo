@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAPIDemo.Models;
-using WebAPIDemo.Repositories;
+
 // Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
 
 namespace WebAPIDemo.Controllers;

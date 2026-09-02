@@ -1,28 +1,48 @@
+version: '3.8'
+
 services:
-  # Dienst 1: De PostgreSQL Database
   postgres-db:
-    image: postgres:16-alpine # Een lichtgewicht, stabiele versie van Postgres
+    image: postgres:16-alpine
     container_name: postgres_container
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: JeWachtwoordHier # Dit moet matchen met je appsettings.json
+      POSTGRES_PASSWORD: JeWachtwoordHier
       POSTGRES_DB: WebAPIDemoDb
     ports:
-      - "5432:5432" # Sluis poort 5432 van de container door naar jouw localhost:5432
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Zorgt dat je data bewaard blijft als de container stopt
+      - postgres_data:/var/lib/postgresql/data
 
-  # Dienst 2: pgAdmin (De online beheeromgeving)
   pgadmin-tool:
     image: dpage/pgadmin4
     container_name: pgadmin_container
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: student@opleiding.be # Je inlog-e-mail voor pgAdmin
-      PGADMIN_DEFAULT_PASSWORD: Welkom01!      # Je inlogwachtwoord voor pgAdmin
+      PGADMIN_DEFAULT_EMAIL: student@opleiding.be
+      PGADMIN_DEFAULT_PASSWORD: Welkom01!
     ports:
-      - "8080:80" # Je opent pgAdmin via http://localhost:8080
+      - "5050:80"
+    depends_on:
+      - postgres-db
+
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webapi_container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ConnectionStrings__DefaultConnection=Host=postgres-db;Database=WebAPIDemoDb;Username=postgres;Password=JeWachtwoordHier
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
     depends_on:
       - postgres-db
 

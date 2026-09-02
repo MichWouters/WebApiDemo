@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApiDemo.Data;
-using WebAPIDemo.Models;
-
-namespace WebAPIDemo.Repositories
+﻿namespace WebAPIDemo.Repositories
 {
     public class LaptopRepository : GenericRepository<Laptop>, ILaptopRepository
     {

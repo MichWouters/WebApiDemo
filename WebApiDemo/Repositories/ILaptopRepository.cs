@@ -1,6 +1,4 @@
-﻿using WebAPIDemo.Models;
-
-namespace WebAPIDemo.Repositories
+﻿namespace WebAPIDemo.Repositories
 {
     // We erven alle standaard methoden over voor het type Laptop
     public interface ILaptopRepository : IGenericRepository<Laptop>

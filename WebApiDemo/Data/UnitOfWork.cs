@@ -1,8 +1,4 @@
-﻿using WebApiDemo.Data;
-using WebApiDemo.Repositories;
-using WebAPIDemo.Models;
-
-namespace WebAPIDemo.Repositories
+﻿namespace WebAPIDemo.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -10,10 +6,10 @@ namespace WebAPIDemo.Repositories
 
         // Private fields voor de repositories (voor lazy loading)
         private ILaptopRepository? _laptopRepository;
-
         private IBestellingRepository? _bestellingRepository;
+        private IKlantRepository _klantRepository;
+
         private IGenericRepository<Product>? _productRepository;
-        private IGenericRepository<Klant>? _klantRepository;
         private IGenericRepository<OrderLijn>? _orderLijnRepository;
 
         public UnitOfWork(WebAPIDemoContext context)
@@ -29,13 +25,13 @@ namespace WebAPIDemo.Repositories
 
         public IBestellingRepository BestellingRepository =>
             _bestellingRepository ??= new BestellingRepository(_context);
+        
+        public IKlantRepository KlantRepository =>
+            _klantRepository ??= new KlantRepository(_context);
 
         // Voor de generieke repositories maken we direct een GenericRepository<T> aan
         public IGenericRepository<Product> ProductRepository =>
             _productRepository ??= new GenericRepository<Product>(_context);
-
-        public IGenericRepository<Klant> KlantRepository =>
-            _klantRepository ??= new GenericRepository<Klant>(_context);
 
         public IGenericRepository<OrderLijn> OrderLijnRepository =>
             _orderLijnRepository ??= new GenericRepository<OrderLijn>(_context);

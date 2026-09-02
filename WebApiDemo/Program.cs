@@ -1,7 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using WebApiDemo.Data;
-using WebAPIDemo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registreer de Database Connectie
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registreer de DbContext met de PostgreSQL provider (Npgsql)
 builder.Services.AddDbContext<WebAPIDemoContext>(options =>
@@ -35,5 +32,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//app.UseHttpsRedirection();
 
 app.Run();

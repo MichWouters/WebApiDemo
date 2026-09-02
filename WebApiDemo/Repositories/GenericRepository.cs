@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApiDemo.Data;
-
-namespace WebAPIDemo.Repositories
+﻿namespace WebAPIDemo.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {

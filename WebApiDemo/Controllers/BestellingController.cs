@@ -1,41 +1,47 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebAPIDemo.Models;
-using WebAPIDemo.Repositories;
-
-namespace WebAPIDemo.Controllers
+﻿namespace WebAPIDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class BestellingController : ControllerBase
     {
+        // 1. We gebruiken enkel nog IUnitOfWork, geen losse repositories meer!
         private readonly IUnitOfWork _uow;
 
-        // Dependency Injection
         public BestellingController(IUnitOfWork uow)
         {
             _uow = uow;
         }
 
-        // GET: api/bestellingen
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bestelling>>> GetBestellingen()
+        // GET: api/Bestellingen/5/details
+        // Haalt een bestelling op inclusief Klant, OrderLijnen en Producten
+        [HttpGet("{id}/details")]
+        public async Task<ActionResult<Bestelling>> GetBestellingMetDetails(int id)
         {
-            var bestellingen = await _uow.BestellingRepository.GetAllAsync();
-            return Ok(bestellingen);
-        }
-
-        // GET: api/bestellingen/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Bestelling>> GetBestelling(int id)
-        {
-            var bestelling = await _uow.BestellingRepository.GetByIdAsync(id);
+            // Gebruik de specifieke repository-methode via de UoW
+            var bestelling = await _uow.BestellingRepository.GetBestellingMetDetailsAsync(id);
 
             if (bestelling == null)
             {
-                return NotFound($"Bestelling met ID {id} is niet gevonden.");
+                return NotFound();
             }
 
             return Ok(bestelling);
+        }
+
+        // GET: api/Bestellingen/klant/3
+        // Haalt een klant op inclusief al zijn bestellingen en gekoppelde producten
+        [HttpGet("klant/{klantId}")]
+        public async Task<ActionResult<Klant>> GetBestellingenVanKlant(int klantId)
+        {
+            // Hier spreken we de KlantRepository aan via dezelfde UoW
+            var klant = await _uow.KlantRepository.GetKlantMetBestellingen(klantId);
+
+            if (klant == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(klant);
         }
 
         // POST: api/bestellingen
@@ -45,7 +51,7 @@ namespace WebAPIDemo.Controllers
             _uow.BestellingRepository.Add(bestelling);
             await _uow.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBestelling), new { id = bestelling.Id }, bestelling);
+            return CreatedAtAction(nameof(PostBestelling), new { id = bestelling.Id }, bestelling);
         }
 
         // PUT: api/bestellingen/5
