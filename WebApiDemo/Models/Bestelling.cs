@@ -6,8 +6,8 @@
 
         public int KlantId { get; set; }
 
-        public Klant? Klant { get; set; } = default!;
+        public Klant? Klant { get; set; }
 
-        public List<OrderLijn> OrderLijnen { get; set; } = default!;
+        public List<OrderLijn> OrderLijnen { get; set; } = [];
     }
 }
