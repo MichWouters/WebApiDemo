@@ -6,3 +6,4 @@ global using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 global using Microsoft.EntityFrameworkCore;
 global using WebAPIDemo.Repositories;
 global using Microsoft.AspNetCore.Mvc;
+global using WebApiDemo.DTOs.Bestellingen;
