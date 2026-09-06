@@ -1,4 +1,7 @@
-﻿namespace WebAPIDemo.Controllers
+﻿using Mapster;
+using WebApiDemo.DTOs.Klanten;
+
+namespace WebAPIDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -15,17 +18,21 @@
         // GET: api/Bestellingen/5/details
         // Haalt een bestelling op inclusief Klant, OrderLijnen en Producten
         [HttpGet("{id}/details")]
-        public async Task<ActionResult<Bestelling>> GetBestellingMetDetails(int id)
+        public async Task<ActionResult<KlantMetBestellingenDto>> GetBestellingMetDetails(int id)
         {
             // Gebruik de specifieke repository-methode via de UoW
-            var bestelling = await _uow.BestellingRepository.GetBestellingMetDetailsAsync(id);
+            Bestelling? bestelling = await _uow.BestellingRepository.GetBestellingMetDetailsAsync(id);
 
             if (bestelling == null)
             {
                 return NotFound();
             }
 
-            return Ok(bestelling);
+            // Zet het model om naar een DTO
+            KlantMetBestellingenDto dto = bestelling.Adapt<KlantMetBestellingenDto>();
+
+            // Retourneer de DTO
+            return Ok(dto);
         }
 
         // GET: api/Bestellingen/klant/3
@@ -34,14 +41,17 @@
         public async Task<ActionResult<Klant>> GetBestellingenVanKlant(int klantId)
         {
             // Hier spreken we de KlantRepository aan via dezelfde UoW
-            var klant = await _uow.KlantRepository.GetKlantMetBestellingen(klantId);
+            Klant? klant = await _uow.KlantRepository.GetKlantMetBestellingen(klantId);
 
             if (klant == null)
             {
                 return NotFound();
             }
 
-            return Ok(klant);
+            // Zet het model om naar een DTO
+            KlantDto dto = klant.Adapt<KlantDto>();
+
+            return Ok(dto);
         }
 
         // POST: api/bestellingen
