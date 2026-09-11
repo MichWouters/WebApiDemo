@@ -131,11 +131,11 @@ public class ProductController : ControllerBase
     private async Task ValideerProductAsync(ProductWriteDto dto)
     {
         // Voorbeeld business rule: controleer of er al een product bestaat met dezelfde naam
-        bool naamBestaat = await _uow.ProductRepository.BestaatNaamAsync(dto.Naam);
+        //bool naamBestaat = await _uow.ProductRepository.BestaatNaamAsync(dto.Naam);
 
-        if (naamBestaat)
-        {
-            ModelState.AddModelError(nameof(dto.Naam), $"Er bestaat al een product met de naam '{dto.Naam}'.");
-        }
+        //if (naamBestaat)
+        //{
+        //    ModelState.AddModelError(nameof(dto.Naam), $"Er bestaat al een product met de naam '{dto.Naam}'.");
+        //}
     }
 }
