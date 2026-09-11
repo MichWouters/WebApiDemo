@@ -1,6 +1,6 @@
-﻿namespace WebAPIDemo.Models;
+﻿namespace WebApiDemo.Models;
 
-public class Laptop
+public class Laptop : IModel
 {
     // De 'id' is essentieel om dit specifieke object later terug te vinden
     public int Id { get; set; }

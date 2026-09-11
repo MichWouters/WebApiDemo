@@ -1,4 +1,4 @@
-namespace WebAPIDemo.Repositories;
+namespace WebApiDemo.Repositories;
 
 public interface IKlantRepository: IGenericRepository<Klant>
 {

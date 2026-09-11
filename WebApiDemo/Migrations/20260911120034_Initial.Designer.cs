@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WebAPIDemo.Data;
+using WebApiDemo.Data;
 
 #nullable disable
 
 namespace WebApiDemo.Migrations
 {
     [DbContext(typeof(WebAPIDemoContext))]
-    [Migration("20260906145114_Laptop_Seeding")]
-    partial class Laptop_Seeding
+    [Migration("20260911120034_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace WebApiDemo.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WebAPIDemo.Models.Bestelling", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Bestelling", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace WebApiDemo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Klant", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Klant", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,27 +97,27 @@ namespace WebApiDemo.Migrations
                         new
                         {
                             Id = 1,
-                            AangemaaktDatum = new DateTime(2022, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AangemaaktDatum = new DateTime(2021, 10, 15, 12, 0, 0, 0, DateTimeKind.Utc),
                             Naam = "Van Der Neffe",
                             Voornaam = "Leon"
                         },
                         new
                         {
                             Id = 2,
-                            AangemaaktDatum = new DateTime(2022, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AangemaaktDatum = new DateTime(2014, 10, 15, 12, 0, 0, 0, DateTimeKind.Utc),
                             Naam = "Van De Kasseinen",
                             Voornaam = "Firmin"
                         },
                         new
                         {
                             Id = 3,
-                            AangemaaktDatum = new DateTime(2022, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AangemaaktDatum = new DateTime(2023, 10, 15, 12, 0, 0, 0, DateTimeKind.Utc),
                             Naam = "Kiekeboe",
                             Voornaam = "Marcel"
                         });
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Laptop", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Laptop", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -334,7 +334,7 @@ namespace WebApiDemo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.OrderLijn", b =>
+            modelBuilder.Entity("WebApiDemo.Models.OrderLijn", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -432,7 +432,7 @@ namespace WebApiDemo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Product", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,9 +478,9 @@ namespace WebApiDemo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Bestelling", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Bestelling", b =>
                 {
-                    b.HasOne("WebAPIDemo.Models.Klant", "Klant")
+                    b.HasOne("WebApiDemo.Models.Klant", "Klant")
                         .WithMany("Bestellingen")
                         .HasForeignKey("KlantId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -489,15 +489,15 @@ namespace WebApiDemo.Migrations
                     b.Navigation("Klant");
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.OrderLijn", b =>
+            modelBuilder.Entity("WebApiDemo.Models.OrderLijn", b =>
                 {
-                    b.HasOne("WebAPIDemo.Models.Bestelling", "Bestelling")
+                    b.HasOne("WebApiDemo.Models.Bestelling", "Bestelling")
                         .WithMany("OrderLijnen")
                         .HasForeignKey("BestellingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebAPIDemo.Models.Product", "Product")
+                    b.HasOne("WebApiDemo.Models.Product", "Product")
                         .WithMany("Orderlijnen")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -508,17 +508,17 @@ namespace WebApiDemo.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Bestelling", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Bestelling", b =>
                 {
                     b.Navigation("OrderLijnen");
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Klant", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Klant", b =>
                 {
                     b.Navigation("Bestellingen");
                 });
 
-            modelBuilder.Entity("WebAPIDemo.Models.Product", b =>
+            modelBuilder.Entity("WebApiDemo.Models.Product", b =>
                 {
                     b.Navigation("Orderlijnen");
                 });

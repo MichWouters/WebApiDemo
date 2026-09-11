@@ -1,9 +1,8 @@
-﻿namespace WebAPIDemo.Repositories
-{
-    public interface IBestellingRepository : IGenericRepository<Bestelling>
-    {
-        Task<Bestelling?> GetBestellingMetKlantAsync(int id);
+﻿namespace WebApiDemo.Repositories;
 
-        Task<Bestelling?> GetBestellingMetDetailsAsync(int id);
-    }
+public interface IBestellingRepository : IGenericRepository<Bestelling>
+{
+    Task<Bestelling?> GetBestellingMetKlantAsync(int id);
+
+    Task<Bestelling?> GetBestellingMetDetailsAsync(int id);
 }

@@ -1,11 +1,10 @@
-global using WebAPIDemo.Models;
-global using WebAPIDemo.Data;
-global using System;
-global using Microsoft.EntityFrameworkCore.Migrations;
-global using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-global using Microsoft.EntityFrameworkCore;
-global using WebAPIDemo.Repositories;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore.Migrations;
+global using Microsoft.EntityFrameworkCore;
+global using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+global using System;
 global using WebApiDemo.DTOs.Bestellingen;
-global using WebAPIDemo.Controllers;
-
+global using WebApiDemo.Models;
+global using WebApiDemo.Data;
+global using WebApiDemo.DTOs.Producten;
+global using WebApiDemo.Repositories;

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WebAPIDemo.DTOs.Producten;
+namespace WebApiDemo.DTOs.Producten;
 
 public class ProductWriteDto
 {

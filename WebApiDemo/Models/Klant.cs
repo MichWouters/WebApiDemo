@@ -1,15 +1,16 @@
-﻿namespace WebAPIDemo.Models
+﻿using WebApiDemo.Models;
+
+namespace WebApiDemo.Models;
+
+public class Klant : IModel
 {
-    public class Klant
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Naam { get; set; } = default!;
+    public string Naam { get; set; } = default!;
 
-        public string Voornaam { get; set; } = default!;
+    public string Voornaam { get; set; } = default!;
 
-        public DateTime AangemaaktDatum { get; set; }
+    public DateTime AangemaaktDatum { get; set; }
 
-        public List<Bestelling>? Bestellingen { get; set; } = default!;
-    }
+    public List<Bestelling>? Bestellingen { get; set; } = default!;
 }

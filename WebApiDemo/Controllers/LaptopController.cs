@@ -2,7 +2,7 @@
 
 // Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
 
-namespace WebAPIDemo.Controllers;
+namespace WebApiDemo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
