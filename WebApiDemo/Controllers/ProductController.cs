@@ -1,6 +1,5 @@
 ﻿using Mapster;
 
-
 namespace WebApiDemo.Controllers;
 
 [ApiController]
@@ -57,6 +56,14 @@ public class ProductController : ControllerBase
     {
         _logger.LogInformation("POST request voor een nieuw Product");
 
+        // Custom Modelstate validation
+        await ValideerProductAsync(dto);
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         // 1. Map DTO naar Domain Model
         Product product = dto.Adapt<Product>();
 
@@ -83,6 +90,13 @@ public class ProductController : ControllerBase
         {
             _logger.LogWarning($"Product met ID {id} werd niet gevonden voor update.");
             return NotFound($"Kan product met ID {id} niet bijwerken omdat het niet bestaat.");
+        }
+
+        await ValideerProductAsync(dto);
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
         }
 
         // 2. Map de nieuwe waarden OVER de bestaande entiteit (behoudt ID en niet-gewijzigde velden)
@@ -112,5 +126,16 @@ public class ProductController : ControllerBase
         await _uow.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    private async Task ValideerProductAsync(ProductWriteDto dto)
+    {
+        // Voorbeeld business rule: controleer of er al een product bestaat met dezelfde naam
+        bool naamBestaat = await _uow.ProductRepository.BestaatNaamAsync(dto.Naam);
+
+        if (naamBestaat)
+        {
+            ModelState.AddModelError(nameof(dto.Naam), $"Er bestaat al een product met de naam '{dto.Naam}'.");
+        }
     }
 }

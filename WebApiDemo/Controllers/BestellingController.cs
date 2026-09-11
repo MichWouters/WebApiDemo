@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using WebApiDemo.DTOs.Klanten;
 
 namespace WebApiDemo.Controllers;
 
@@ -58,6 +57,14 @@ public class BestellingController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Bestelling>> PostBestelling(BestellingWriteDto dto)
     {
+        // Voer Custom Modelstate validations uit
+        await ValideerBestellingAsync(dto);
+
+        if(!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         // Map DTO naar Model
         Bestelling bestelling = dto.Adapt<Bestelling>();
 
@@ -74,11 +81,18 @@ public class BestellingController : ControllerBase
     public async Task<IActionResult> PutBestelling(int id, BestellingWriteDto dto)
     {
         // Haal het bestaande object op op basis van het ID uit de URL
-        var bestaandeBestelling = await _uow.BestellingRepository.GetByIdAsync(id);
+        Bestelling? bestaandeBestelling = await _uow.BestellingRepository.GetByIdAsync(id);
 
         if (bestaandeBestelling == null)
         {
             return NotFound($"Bestelling met ID {id} werd niet gevonden.");
+        }
+
+        await ValideerBestellingAsync(dto);
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
         }
 
         // Map de nieuwe waarden OVER het bestaande entiteit-object
@@ -103,5 +117,27 @@ public class BestellingController : ControllerBase
         await _uow.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    private async Task ValideerBestellingAsync(BestellingWriteDto dto)
+    {
+        // 1. Controleer of de klant bestaat
+        bool klantBestaat = await _uow.KlantRepository.ExistsAsync(dto.KlantId);
+        if (!klantBestaat)
+        {
+            ModelState.AddModelError(nameof(dto.KlantId), $"Klant met ID {dto.KlantId} bestaat niet.");
+        }
+
+        // 2. Haal alle bestaande Product IDs op en vergelijk
+        int[] bestaandeProductIds = await _uow.ProductRepository.GetExistingIdsAsync();
+        int[] besteldeProductenIds = dto.OrderLijnen.Select(ol => ol.ProductId).ToArray();
+
+        foreach (int productId in besteldeProductenIds)
+        {
+            if (!bestaandeProductIds.Contains(productId))
+            {
+                ModelState.AddModelError(nameof(dto.OrderLijnen), $"Product met ID {productId} bestaat niet.");
+            }
+        }
     }
 }

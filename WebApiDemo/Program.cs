@@ -15,7 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registreer de Database Connectie
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+string? connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
 
 // Registreer de DbContext met de PostgreSQL provider (Npgsql)
 builder.Services.AddDbContext<WebAPIDemoContext>(options =>

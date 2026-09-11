@@ -24,5 +24,5 @@ public interface IGenericRepository<TEntity> where TEntity : class, IModel
     Task<bool> ExistsAsync(int id);
 
     // Haal de lijst met alle id's uit een tabel op
-    Task<int[]> GetExistingIdsAsync(IEnumerable<int> ids);
+    Task<int[]> GetExistingIdsAsync();
 }
