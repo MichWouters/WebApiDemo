@@ -1,103 +1,59 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using WebApiDemo.DTOs.Producten;
 
-// Zorg ervoor dat je Microsoft.Extensions.Logging hebt via using
-
-namespace WebAPIDemo.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class ProductController : ControllerBase
+namespace WebApiDemo.Controllers
 {
-    // Onze "ingrediënten" (Dependencies)
-    private readonly IUnitOfWork _uow;
-    private readonly ILogger<ProductController> _logger;
-
-    // Vraag om en injecteer Dependencies
-    public ProductController(IUnitOfWork uow, ILogger<ProductController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ProductController : ControllerBase
     {
-        _uow = uow;
-        _logger = logger;
-    }
+        // Onze "ingrediënten" (Dependencies)
+        private readonly IUnitOfWork _uow;
+        private readonly ILogger<ProductController> _logger;
 
-    [HttpGet]
-    public async Task<ActionResult<List<Laptop>>> GetAlleLaptopsAsync()
-    {
-        _logger.LogInformation("GET request ontvangen voor alle laptops.");
-        return Ok(await _uow.LaptopRepository.GetAllAsync());
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Laptop>> GetLaptopByIdAsync(int id)
-    {
-        _logger.LogInformation($"GET request voor laptop met ID: {id}");
-
-        Laptop? laptop = await _uow.LaptopRepository.GetByIdAsync(id);
-
-        if (laptop == null)
+        // Vraag om en injecteer Dependencies
+        public ProductController(IUnitOfWork uow, ILogger<ProductController> logger)
         {
-            _logger.LogWarning($"Laptop met ID {id} werd niet gevonden.");
-            return NotFound($"Helaas, we konden geen laptop vinden met Id {id}.");
+            _uow = uow;
+            _logger = logger;
         }
 
-        return Ok(laptop);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Laptop>> CreateLaptopAsync(Laptop nieuweLaptop)
-    {
-        _logger.LogInformation($"Aanmaken van nieuwe laptop: {nieuweLaptop.Merk}");
-
-        // 1. Voeg de actie toe aan de Change Tracker via de repository
-        _uow.LaptopRepository.Add(nieuweLaptop);
-
-        // 2. Schrijf de wijzigingen daadwerkelijk weg via de Unit of Work
-        await _uow.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(CreateLaptopAsync), new { id = nieuweLaptop.Id }, nieuweLaptop);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateLaptopAsync(int id, Laptop bijgewerkteLaptop)
-    {
-        _logger.LogInformation($"Update request voor laptop met ID: {id}");
-
-        if (id != bijgewerkteLaptop.Id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            return BadRequest();
+            _logger.LogInformation($"GET request voor Product met ID: {id}");
+
+            Product? product = await _uow.ProductRepository.GetByIdAsync(id);
+
+            if (product == null)
+            {
+                _logger.LogWarning($"Product met ID {id} werd niet gevonden.");
+                return NotFound($"Helaas, we konden geen product vinden met Id {id}.");
+            }
+
+            // Map Model naar DTO
+            ProductDto productDto = product.Adapt<ProductDto>();
+
+            return Ok(productDto);
         }
 
-        Laptop? bestaandeLaptop = await _uow.LaptopRepository.GetByIdAsync(id);
-
-        if (bestaandeLaptop == null)
+        [HttpGet()]
+        public async Task<ActionResult<ProductDto[]>> GetAllProducts(int id)
         {
-            _logger.LogWarning($"Update mislukt: Laptop met ID {id} bestaat niet.");
-            return NotFound($"Kan geen laptop bijwerken met Id {id}, omdat deze niet bestaat.");
+            _logger.LogInformation($"GET request voor alle Producten");
+
+            IEnumerable<Product> products = await _uow.ProductRepository.GetAllAsync();
+
+            if (products == null || !products.Any())
+            {
+                _logger.LogWarning("Geen producten gevonden.");
+                return NotFound("Geen producten gevonden.");
+            }
+
+            // Map colllectie van Modellen naar collectie van DTO's
+            ProductDto[] productDtos = products.Adapt<ProductDto[]>();
+
+            return Ok(productDtos);
         }
-
-        _uow.LaptopRepository.Update(bijgewerkteLaptop);
-        await _uow.SaveChangesAsync();
-
-        _logger.LogInformation($"Laptop met ID {id} is succesvol bijgewerkt.");
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteLaptopAsync(int id)
-    {
-        _logger.LogInformation($"Delete request voor laptop met ID: {id}");
-
-        Laptop? laptop = await _uow.LaptopRepository.GetByIdAsync(id);
-
-        if (laptop == null)
-        {
-            _logger.LogError($"Delete mislukt: Laptop met ID {id} werd niet gevonden.");
-            return NotFound($"Kan laptop met Id {id} niet verwijderen, omdat deze niet is gevonden.");
-        }
-
-        _uow.LaptopRepository.Delete(laptop);
-        await _uow.SaveChangesAsync();
-
-        _logger.LogInformation($"Laptop met ID {id} is succesvol verwijderd.");
-        return NoContent();
     }
 }

@@ -1,11 +1,9 @@
-using System.Reflection;
-using Mapster;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Vertel Mapster om het huidige project te scannen op IRegister klassen (zoals onze MapperProfile)
-TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
+//TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
 // Add services to the container.
 

@@ -9,4 +9,6 @@ public class KlantDto
     public string Voornaam { get; set; }
 
     public DateTime AangemaaktDatum { get; set; }
+
+    public BesteldProductDto[] BesteldeProducten{ get; set; }
 }
