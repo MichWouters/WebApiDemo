@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using WebApiDemo.Services;
 
 namespace WebApiDemo.Controllers;
 
@@ -9,9 +10,12 @@ public class BestellingController : ControllerBase
     // 1. We gebruiken enkel nog IUnitOfWork, geen losse repositories meer!
     private readonly IUnitOfWork _uow;
 
-    public BestellingController(IUnitOfWork uow)
+    private readonly IBestellingService _service;
+
+    public BestellingController(IUnitOfWork uow, IBestellingService service)
     {
         _uow = uow;
+        _service = service;
     }
 
     // GET: api/Bestelling/5/details
@@ -53,27 +57,37 @@ public class BestellingController : ControllerBase
         return Ok(dto);
     }
 
-    // POST: api/bestelling
     [HttpPost]
-    public async Task<ActionResult<Bestelling>> PostBestelling(BestellingWriteDto dto)
+    public async Task<ActionResult<BestellingCreatedDto>> PostBestelling(BestellingWriteDto dto)
     {
-        // Voer Custom Modelstate validations uit
+        // Custom validatie uitvoeren (bijv. bestaat de klant, zijn de producten op voorraad?)
         await ValideerBestellingAsync(dto);
 
-        if(!ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        // Map DTO naar Model
+        // Map DTO naar model
         Bestelling bestelling = dto.Adapt<Bestelling>();
 
+        // Opslaan in database
         _uow.BestellingRepository.Add(bestelling);
         await _uow.SaveChangesAsync();
 
-        // Teruggegeven model verplaatsen we tijdelijk naar NULL.
-        // Later zullen we hier een bevestiging van de bestelling returnen
-        return CreatedAtAction(nameof(PostBestelling), new { id = bestelling.Id }, null);
+        var resultDto = await CalculateResultDto(bestelling.Id);
+
+        // Retourneer 201 Created met de gevulde BestellingCreatedDto
+        return CreatedAtAction(nameof(PostBestelling), new { id = bestelling.Id }, resultDto);
+    }
+
+    private async Task<BestellingCreatedDto> CalculateResultDto(int bestellingId)
+    {
+        Bestelling? models = await _uow.BestellingRepository.GetBestellingMetDetailsAsync(bestellingId);
+        int accountLeeftijd = DateTime.UtcNow.Year - models.Klant.AangemaaktDatum.Year;
+        List<BesteldProductDto>? productDtos = models.OrderLijnen.Adapt<List<BesteldProductDto>>();
+
+        return _service.Calculate(productDtos, accountLeeftijd);
     }
 
     // PUT: api/bestelling/5
@@ -107,7 +121,7 @@ public class BestellingController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBestelling(int id)
     {
-        var bestelling = await _uow.BestellingRepository.GetByIdAsync(id);
+        Bestelling? bestelling = await _uow.BestellingRepository.GetByIdAsync(id);
         if (bestelling == null)
         {
             return NotFound();

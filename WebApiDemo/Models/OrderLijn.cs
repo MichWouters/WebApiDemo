@@ -4,7 +4,7 @@ public class OrderLijn : IModel
 {
     public int Id { get; set; }
 
-    public double Aantal { get; set; }
+    public int Aantal { get; set; }
 
     public int BestellingId { get; set; }
 

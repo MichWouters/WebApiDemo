@@ -1,18 +1,14 @@
 using Scalar.AspNetCore;
+using WebApiDemo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Vertel Mapster om het huidige project te scannen op IRegister klassen (zoals onze MapperProfile)
-//TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
-
-// Add services to the container.
-
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 // Registreer UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IBestellingService, BestellingService>();
 
 // Registreer de Database Connectie
 string? connectionString = builder.Configuration.GetConnectionString("PostgresConnection");

@@ -1,5 +1,4 @@
 using Mapster;
-using WebApiDemo.DTOs.Klanten;
 
 namespace WebApiDemo.Configuration;
 
@@ -20,8 +19,8 @@ public class MapperProfile : IRegister
         // De namen van deze Properties zijn hetzelfde, maar zitten een niveau dieper in de Source.
         // Daarom moeten we deze manueel mappen
         config.NewConfig<OrderLijn, BesteldProductDto>()
-            .Map(dest => dest.Naam, src => src.Product!.Naam)
-            .Map(dest => dest.Prijs, src => src.Product!.Prijs);
+            .Map(dest => dest.ProductNaam, src => src.Product!.Naam)
+            .Map(dest => dest.ProductPrijs, src => src.Product!.Prijs);
 
         //Geavanceerdere mappings
 
@@ -29,8 +28,8 @@ public class MapperProfile : IRegister
         config.NewConfig<OrderLijn, BesteldProductDto>()
             .Map(dest => dest.Id, src => src.Product.Id)
             .Map(dest => dest.Aantal, src => src.Aantal)
-            .Map(dest => dest.Naam, src => src.Product.Naam)
-            .Map(dest => dest.Prijs, src => src.Product.Prijs);
+            .Map(dest => dest.ProductNaam, src => src.Product.Naam)
+            .Map(dest => dest.ProductPrijs, src => src.Product.Prijs);
 
         // 2. Vertel Mapster hoe de Klant naar de KlantDto vertaald moet worden
         config.NewConfig<Klant, KlantDto>()
